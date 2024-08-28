@@ -12,16 +12,18 @@ _LOGGER = logging.getLogger(__name__)
 @click.group(chain=True)
 @click.option('-a', '--api-name', required=True, help='API name')
 @click.option('-b', '--basic-auth-creds', required=True, help='API basic auth credentials')
+@click.option('-xr', '--x-referer', required=True, help='API X-Referer')
+@click.option('-xsid', '--x-serialid', required=True, help='API X-Serialid')
 @click.option('-u', '--username', required=True, help='API username')
 @click.option('-p', '--password', required=True, help='API password')
 @click.option('-v', '--verbose/--no-verbose', default=False, help='Enable verbose logging')
 @click.pass_context
-def smartbox(ctx, api_name, basic_auth_creds, username, password, verbose):
+def smartbox(ctx, api_name, basic_auth_creds, x_referer, x_serialid, username, password, verbose):
     ctx.ensure_object(dict)
     logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(name)s.%(funcName)s:%(lineno)d] %(message)s',
                         level=logging.DEBUG if verbose else logging.INFO,
                         datefmt='%Y-%m-%d %H:%M:%S')
-    session = Session(api_name, basic_auth_creds, username, password)
+    session = Session(api_name, basic_auth_creds, x_referer, x_serialid, username, password)
     ctx.obj['session'] = session
     ctx.obj['verbose'] = verbose
 
