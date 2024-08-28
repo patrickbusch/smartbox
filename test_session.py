@@ -5,6 +5,8 @@ import smartbox
 
 _MOCK_API_NAME = 'myapi'
 _MOCK_BASIC_AUTH_CREDS = 'sldjfls93r2lkj'
+_MOCK_X_REFERER = 'myreferer'
+_MOCK_X_SERIALID = '2'
 _MOCK_USERNAME = 'xxxxx'
 _MOCK_PASSWORD = 'yyyyy'
 _MOCK_TOKEN_TYPE = 'bearer'
@@ -24,13 +26,15 @@ def session(requests_mock):
                            'expires_in': _MOCK_EXPIRES_IN,
                            'refresh_token': _MOCK_REFRESH_TOKEN,
                        })
-    return smartbox.Session(_MOCK_API_NAME, _MOCK_BASIC_AUTH_CREDS, _MOCK_USERNAME, _MOCK_PASSWORD)
+    return smartbox.Session(_MOCK_API_NAME, _MOCK_BASIC_AUTH_CREDS, _MOCK_X_REFERER, _MOCK_X_SERIALID, _MOCK_USERNAME, _MOCK_PASSWORD)
 
 
 def test_auth(requests_mock, session):
     '''Test initial token request'''
     assert requests_mock.last_request.text == f'grant_type=password&username={_MOCK_USERNAME}&password={_MOCK_PASSWORD}'
     assert requests_mock.last_request.headers['authorization'] == f"Basic {_MOCK_BASIC_AUTH_CREDS}"
+    assert requests_mock.last_request.headers['x-referer'] == _MOCK_X_REFERER
+    assert requests_mock.last_request.headers['x-serialid'] == _MOCK_X_SERIALID
     assert session.get_api_name() == _MOCK_API_NAME
 
 
@@ -164,7 +168,7 @@ def test_refresh(requests_mock):
                       }]})
 
     with freeze_time("2021-01-15 23:23:45") as frozen_datetime:
-        session = smartbox.Session(_MOCK_API_NAME, _MOCK_BASIC_AUTH_CREDS, _MOCK_USERNAME, _MOCK_PASSWORD)
+        session = smartbox.Session(_MOCK_API_NAME, _MOCK_BASIC_AUTH_CREDS, _MOCK_X_REFERER, _MOCK_X_SERIALID, _MOCK_USERNAME, _MOCK_PASSWORD)
         assert session.get_expiry_time() == (frozen_datetime() + datetime.timedelta(seconds=_MOCK_EXPIRES_IN))
         assert token_request_matcher(requests_mock.last_request, "password")
         assert session.get_access_token() == _MOCK_ACCESS_TOKEN
