@@ -8,6 +8,8 @@ from smartbox import SocketSession
 
 _MOCK_API_NAME = 'myapi'
 _MOCK_BASIC_AUTH_CREDS = 'sldjfls93r2lkj'
+_MOCK_X_REFERER = 'myreferer'
+_MOCK_X_SERIALID = '2'
 _MOCK_USERNAME = 'xxxxx'
 _MOCK_PASSWORD = 'yyyyy'
 _MOCK_TOKEN_TYPE = 'bearer'
