@@ -9,10 +9,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Session(object):
-    def __init__(self, api_name, basic_auth_credentials, username, password):
+    def __init__(self, api_name, basic_auth_credentials, x_referer, x_serialid, username, password):
         self._api_name = api_name
         self._api_host = f"https://api-{self._api_name}.helki.com"
         self._basic_auth_credentials = basic_auth_credentials
+        self._x_referer = x_referer
+        self._x_serialid = x_serialid
         self._auth({'grant_type': 'password', 'username': username, 'password': password})
 
     def _auth(self, credentials):
@@ -20,6 +22,8 @@ class Session(object):
         token_headers = {
             'authorization': f'Basic {self._basic_auth_credentials}',
             'Content-Type': 'application/x-www-form-urlencoded',
+            'x-referer': self._x_referer,
+            'x-serialid': self._x_serialid,
         }
 
         token_url = f"{self._api_host}/client/token"
@@ -45,8 +49,8 @@ class Session(object):
         return {
             "Authorization": f"Bearer {self._access_token}",
             "Content-Type": "application/json",
-            # TODO: generalise
-            "x-serialid": "5",
+            "x-referer": self._x_referer,
+            "x-serialid": self._x_serialid,
         }
 
     def _api_request(self, path):
